@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lokal Ed Transcript Reviewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #b2b2c7;
+            color: #000000;
+        }
+        h1 {
+            color: #2a2e35;
+            text-align: center;
+        }
+        textarea {
+            border-radius: 8px;
+            border: 1px solid #0e0b0b;
+            padding: 10px;
+            font-size: 16px;
+            width: 90%;
+            margin: 10px;
+            height: 150px;
+            
+        }
+        button {
+            background-color: #5c67f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block; 
+            margin: 0 auto; 
+        }
+        button:hover {
+            background-color: #454edf;
+        }
+        label {
+            font-size: 14px;
+        }
+        .audio-row {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        margin-bottom: 20px; /* Add space below the row */
+        }
+
+        /* Style for the 'Next' button to make it bigger and under the audio controls */
+        .next-button {
+            display: block;
+            width: 100%; /* Full width */
+            padding: 15px 0; /* Larger padding */
+            font-size: 20px; /* Larger font size */
+            margin: 30px auto 0; /* Margin top, auto horizontal */
+        }
+        
+    </style>
+</head>
+
+<body>
+    <h1>Lokal Ed Transcript Reviewer</h1>
+    <textarea rows="4" cols="50" id="transcript"></textarea>
+    <div class="audio-row">
+    <audio controls id="audio-player">
+        <source src="" type="audio/wav" />
+        Your browser does not support the audio element.</audio>
+    
+
+    <label><input type="checkbox" id="has_music" value="0" /> Has Music?</label>
+    </div>
+
+    <button id="next-button">Next Audio</button>
+
+    <script>
+        const total = {{ total }};
+        let lastIndex = {{ last }};
+        let category = "{{ category }}";
+        let next = 0;
+        let path = "";
+        const audioPlayer = document.getElementById('audio-player');
+        const transcriptTextarea = document.getElementById('transcript');
+        const hasMusicCheckbox = document.getElementById('has_music');
+        const nextButton = document.getElementById('next-button');
+
+        nextButton.addEventListener('click', loadNextFile);
+
+        loadFile();
+
+        function loadFile() {
+            fetch('/load', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: category,
+                    file_index: lastIndex,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    audioPlayer.src = data.audio_path;
+                    transcriptTextarea.value = data.transcript;
+                    hasMusicCheckbox.checked = false;
+                    last = data.next;
+                    path = data.transcript_path;
+                });
+        }
+
+        function loadNextFile() {
+            lastIndex++;
+            if (lastIndex >= total) {
+                // TO DO: handle end of files
+            } else {
+                loadFile();
+            }
+            handleFormSubmit();
+        }
+
+        function handleFormSubmit() {
+            const formData = {
+                category: category,
+                file: path,
+                text: transcriptTextarea.value,
+                transcript_path: path,
+                has_music: hasMusicCheckbox.checked ? "1" : "0",
+            };
+
+            fetch('/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                });
+        }
+    </script>
+</body>
+
+</html>
