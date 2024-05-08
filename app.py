@@ -4,8 +4,9 @@ from glob import glob
 from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
-audio = glob("static\\outputs\\bs_adn\\*.wav")
-transcripts = glob("static\\text_outputs\\bs_adn\\*.txt")
+base = os.path.join("static", "outputs", "bs_adn", "")
+audio = glob(f"{base}*.wav")
+transcripts = glob(f"{base.replace('outputs', 'text_outputs')}*.txt")
 audio = [a for a in audio if a.replace('wav','txt').replace("outputs", "text_outputs") in transcripts]
 print(len(audio), len(transcripts))
 audio_data = [{"audio":a, "transcript":t} for a, t in zip(audio, transcripts)]
