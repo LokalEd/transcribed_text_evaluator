@@ -8,21 +8,28 @@
             font-family: Arial, sans-serif;
             background-color: #b2b2c7;
             color: #000000;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        h1 {
+
+        h1,
+        h2 {
             color: #2a2e35;
             text-align: center;
         }
+
         textarea {
             border-radius: 8px;
             border: 1px solid #0e0b0b;
             padding: 10px;
             font-size: 16px;
-            width: 90%;
-            margin: 10px;
+            width: 100%;
+            margin: 10px 0;
             height: 150px;
-            
+            box-sizing: border-box;
         }
+
         button {
             background-color: #5c67f2;
             color: white;
@@ -30,46 +37,46 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            display: block; 
-            margin: 0 auto; 
+            display: block;
+            margin: 20px auto;
+            font-size: 18px;
         }
+
         button:hover {
             background-color: #454edf;
         }
+
         label {
-            font-size: 14px;
-        }
-        .audio-row {
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        margin-bottom: 20px; /* Add space below the row */
+            font-size: 16px;
         }
 
-        /* Style for the 'Next' button to make it bigger and under the audio controls */
-        .next-button {
-            display: block;
-            width: 100%; /* Full width */
-            padding: 15px 0; /* Larger padding */
-            font-size: 20px; /* Larger font size */
-            margin: 30px auto 0; /* Margin top, auto horizontal */
+        .audio-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
         }
-        
+
+        #filename {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 
 <body>
     <h1>Lokal Ed Transcript Reviewer</h1>
-    <textarea rows="4" cols="50" id="transcript"></textarea>
+    <div id="filename">Current File: {{ filename }}</div>
     <div class="audio-row">
-    <audio controls id="audio-player">
-        <source src="" type="audio/wav" />
-        Your browser does not support the audio element.</audio>
-    
-
-    <label><input type="checkbox" id="has_music" value="0" /> Has Music?</label>
+        <audio controls id="audio-player">
+            <source src="" type="audio/wav" />
+            Your browser does not support the audio element.
+        </audio>
+        <label><input type="checkbox" id="has_music" value="0" /> Has Music?</label>
     </div>
-
+    <textarea rows="4" cols="50" id="transcript"></textarea>
     <button id="next-button">Next Audio</button>
 
     <script>
@@ -82,6 +89,7 @@
         const transcriptTextarea = document.getElementById('transcript');
         const hasMusicCheckbox = document.getElementById('has_music');
         const nextButton = document.getElementById('next-button');
+        const filenameDiv = document.getElementById('filename');
 
         nextButton.addEventListener('click', loadNextFile);
 
@@ -105,6 +113,7 @@
                     hasMusicCheckbox.checked = false;
                     last = data.next;
                     path = data.transcript_path;
+                    filenameDiv.textContent = 'Current File: ' + data.filename;
                 });
         }
 
