@@ -38,7 +38,18 @@ class PaginatedTranscriptionResponse(BaseModel):
 # region ServeFileQueryArgs
 class ServeFileQueryArgs(BaseModel):
     path: str = Field(..., description="The path to the file")
-# endregion ServeFileQueryArgs
+
+
+class UpdateTranscriptionRequest(BaseModel):
+    id: int = Field(..., description="The id of the transcription")
+    crowd: bool = Field(..., description="Whether the audio is a crowd")
+    has_music: bool = Field(..., description="Whether the audio has music")
+    multispeaker: bool = Field(..., description="Whether the audio is a multispeaker")
+    new_text_rating: int = Field(..., description="The new text rating")
+    old_text_rating: int = Field(..., description="The old text rating")
+    clean_text: str = Field(..., description="The cleaned text")
+    cleaned: bool = Field(..., description="Whether the transcription has been cleaned")
+
 
 # region Transcription Model
 class Transcription(Base):
